@@ -6,7 +6,7 @@
 <style>
   body {
     margin: 0;
-    background: url('https://i.postimg.cc/vHq7yj3X/8-C614-C9-A-8-F82-4-FA9-BFCD-1979437-F7-F61.png') no-repeat center center fixed;
+    background: url('https://i.postimg.cc/vHq7yj3X/8-C614-C9-A-8-E6-208-F0-C7-CC7-C9.png') no-repeat center center fixed;
     background-size: cover;
     overflow: hidden;
     font-family: sans-serif;
@@ -31,13 +31,14 @@
   .fish {
     position: absolute;
     width: 100px;
-    transition: filter 1s linear;
+    will-change: transform, left, top;
+    transition: filter 0.3s;
   }
 </style>
 </head>
 <body>
 
-<!-- Lautsprecher-Symbol (SF Symbol in SVG) -->
+<!-- Lautsprecher-Icon -->
 <svg id="speaker" viewBox="0 0 24 24">
   <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.12-3.84l-1.42 1.42A2.5 2.5 0 0 1 15.5 12a2.5 2.5 0 0 1-2.54 2.42l1.42 1.42A4.5 4.5 0 0 0 16.5 12zm4 0a8.5 8.5 0 0 0-4-7.32l-1.42 1.42A6.5 6.5 0 0 1 18.5 12a6.5 6.5 0 0 1-3.42 5.58l1.42 1.42A8.5 8.5 0 0 0 20.5 12z"/>
 </svg>
@@ -50,54 +51,57 @@ const fishImgUrl = "https://i.postimg.cc/QM2Gy02d/21-F6-B391-3-DF7-401-E-A8-E6-2
 const numFish = 5;
 const fishes = [];
 
+// Zufällige Farbe generieren
+function randomHue() {
+  return Math.floor(Math.random() * 360);
+}
+
 // Fische erzeugen
 for (let i = 0; i < numFish; i++) {
   let fish = document.createElement("img");
   fish.src = fishImgUrl;
   fish.classList.add("fish");
 
-  // Zufällige Startposition
-  fish.style.top = Math.random() * (window.innerHeight - 150) + "px";
-  fish.style.left = Math.random() * (window.innerWidth - 150) + "px";
+  // Startwerte
+  let startFromLeft = Math.random() > 0.5;
+  let hue = randomHue();
 
-  // Zufällige Farbe
-  let hue = Math.random() * 360;
   fish.style.filter = `hue-rotate(${hue}deg)`;
+  fish.style.transform = startFromLeft ? "scaleX(1)" : "scaleX(-1)";
 
-  // Bewegungseigenschaften
+  fish.style.top = Math.random() * (window.innerHeight - 150) + "px";
+  fish.style.left = startFromLeft ? "-120px" : window.innerWidth + 120 + "px";
+
   fishes.push({
     el: fish,
-    x: parseFloat(fish.style.left),
+    x: startFromLeft ? -120 : window.innerWidth + 120,
     y: parseFloat(fish.style.top),
-    dx: Math.random() * 1.5 + 0.5,
-    dy: (Math.random() - 0.5) * 0.5,
-    hue: hue
+    dx: startFromLeft ? (Math.random() * 1.5 + 0.5) : -(Math.random() * 1.5 + 0.5),
+    hue: hue,
+    fromLeft: startFromLeft
   });
 
   document.body.appendChild(fish);
 }
 
-// Fischbewegung
+// Bewegung
 function moveFish() {
   fishes.forEach(f => {
     f.x += f.dx;
-    f.y += f.dy;
 
-    // Bildschirmränder
-    if (f.x > window.innerWidth - 120 || f.x < 0) {
-      f.dx *= -1;
-      // Spiegeln für Richtungswechsel
-      f.el.style.transform = f.dx > 0 ? "scaleX(1)" : "scaleX(-1)";
+    // Falls aus dem Bildschirm raus
+    if ((f.dx > 0 && f.x > window.innerWidth + 150) || (f.dx < 0 && f.x < -150)) {
+      // Neue Richtung und Farbe
+      f.fromLeft = !f.fromLeft;
+      f.dx = f.fromLeft ? (Math.random() * 1.5 + 0.5) : -(Math.random() * 1.5 + 0.5);
+      f.hue = randomHue();
+      f.el.style.filter = `hue-rotate(${f.hue}deg)`;
+      f.el.style.transform = f.fromLeft ? "scaleX(1)" : "scaleX(-1)";
+      f.y = Math.random() * (window.innerHeight - 150);
+      f.x = f.fromLeft ? -120 : window.innerWidth + 120;
     }
-    if (f.y > window.innerHeight - 100 || f.y < 0) {
-      f.dy *= -1;
-    }
 
-    // Farbe sanft ändern
-    f.hue += 0.3;
-    f.el.style.filter = `hue-rotate(${f.hue}deg)`;
-
-    // Position anwenden
+    // Position setzen
     f.el.style.left = f.x + "px";
     f.el.style.top = f.y + "px";
   });
@@ -106,7 +110,7 @@ function moveFish() {
 }
 moveFish();
 
-// Lautsprecher-Klick → Sound abspielen
+// Lautsprecher → Sound
 document.getElementById("speaker").addEventListener("click", () => {
   const audio = document.getElementById("fishSound");
   audio.currentTime = 0;
