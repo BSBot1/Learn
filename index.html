@@ -48,7 +48,7 @@
 
 <script>
 const fishImgUrl = "https://i.postimg.cc/QM2Gy02d/21-F6-B391-3-DF7-401-E-A8-E6-208-F0-C7-CC7-C9.png";
-const numFish = 5;
+const numFish = 12;
 const fishes = [];
 
 // Zufällige Farbe generieren
@@ -62,24 +62,34 @@ for (let i = 0; i < numFish; i++) {
   fish.src = fishImgUrl;
   fish.classList.add("fish");
 
-  // Startwerte
   let startFromLeft = Math.random() > 0.5;
   let hue = randomHue();
 
   fish.style.filter = `hue-rotate(${hue}deg)`;
   fish.style.transform = startFromLeft ? "scaleX(1)" : "scaleX(-1)";
-
   fish.style.top = Math.random() * (window.innerHeight - 150) + "px";
-  fish.style.left = startFromLeft ? "-120px" : window.innerWidth + 120 + "px";
 
-  fishes.push({
-    el: fish,
-    x: startFromLeft ? -120 : window.innerWidth + 120,
-    y: parseFloat(fish.style.top),
-    dx: startFromLeft ? (Math.random() * 1.5 + 0.5) : -(Math.random() * 1.5 + 0.5),
-    hue: hue,
-    fromLeft: startFromLeft
-  });
+  if (startFromLeft) {
+    fish.style.left = (-200 - Math.random() * 500) + "px";
+    fishes.push({
+      el: fish,
+      x: parseFloat(fish.style.left),
+      y: parseFloat(fish.style.top),
+      dx: Math.random() * 1.5 + 0.5,
+      hue: hue,
+      fromLeft: true
+    });
+  } else {
+    fish.style.left = (window.innerWidth + 200 + Math.random() * 500) + "px";
+    fishes.push({
+      el: fish,
+      x: parseFloat(fish.style.left),
+      y: parseFloat(fish.style.top),
+      dx: -(Math.random() * 1.5 + 0.5),
+      hue: hue,
+      fromLeft: false
+    });
+  }
 
   document.body.appendChild(fish);
 }
