@@ -145,16 +145,12 @@ document.getElementById("speaker").addEventListener("click", () => {
 
 // Ablauf beim Laden der Seite
 window.addEventListener("load", () => {
-  setTimeout(() => {
-    // Erst AufgabeFische
-    playSound(sounds.aufgabe, () => {
-      // Wenn fertig, 0.5s warten und dann zufällige Farbe ansagen
-      setTimeout(() => {
-        let farbe = randomColor();
-        playSound(sounds[farbe]);
-      }, 500);
-    });
-  }, 500);
+  // Direkt AufgabeFische spielen
+  playSound(sounds.aufgabe, () => {
+    // Direkt danach zufällige Farbe spielen
+    let farbe = randomColor();
+    playSound(sounds[farbe]);
+  });
 });
 </script>
 
