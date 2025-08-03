@@ -6,7 +6,8 @@
 <style>
   body {
     margin: 0;
-    background-color: #87CEEB; /* Himmelblau */
+    background: url('https://i.postimg.cc/vHq7yj3X/8-C614-C9-A-8-F82-4-FA9-BFCD-1979437-F7-F61.png') no-repeat center center fixed;
+    background-size: cover;
     overflow: hidden;
     font-family: sans-serif;
   }
@@ -19,6 +20,8 @@
     width: 50px;
     height: 50px;
     fill: white; /* Symbolfarbe */
+    transition: fill 0.2s;
+    z-index: 10;
   }
 
   #speaker:hover {
@@ -69,12 +72,12 @@ for (let i = 0; i < 5; i++) {
 function drawBird(bird) {
   ctx.beginPath();
   ctx.fillStyle = bird.color;
-  ctx.arc(bird.x, bird.y, 20, 0, Math.PI * 2);
+  ctx.arc(bird.x, bird.y, 20, 0, Math.PI * 2); // Körper
   ctx.fill();
   ctx.beginPath();
   ctx.moveTo(bird.x, bird.y);
-  ctx.lineTo(bird.x - 30 * bird.direction, bird.y - 10);
-  ctx.lineTo(bird.x - 30 * bird.direction, bird.y + 10);
+  ctx.lineTo(bird.x - 30 * bird.direction, bird.y - 10); // Flügel oben
+  ctx.lineTo(bird.x - 30 * bird.direction, bird.y + 10); // Flügel unten
   ctx.closePath();
   ctx.fill();
 }
