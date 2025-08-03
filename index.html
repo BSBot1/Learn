@@ -87,7 +87,7 @@ for (let i = 0; i < numFish; i++) {
   let hue = randomHue();
 
   fish.style.filter = `hue-rotate(${hue}deg)`;
-  fish.style.transform = startFromLeft ? "scaleX(-1)" : "scaleX(1)";
+  fish.style.transform = startFromLeft ? "scaleX(1)" : "scaleX(-1)"; // Kopf nach vorne
   fish.style.top = Math.random() * (window.innerHeight - 150) + "px";
 
   if (startFromLeft) {
@@ -125,7 +125,7 @@ function moveFish() {
       f.dx = f.fromLeft ? (Math.random() * 1.5 + 0.5) : -(Math.random() * 1.5 + 0.5);
       f.hue = randomHue();
       f.el.style.filter = `hue-rotate(${f.hue}deg)`;
-      f.el.style.transform = f.fromLeft ? "scaleX(-1)" : "scaleX(1)";
+      f.el.style.transform = f.fromLeft ? "scaleX(1)" : "scaleX(-1)";
       f.y = Math.random() * (window.innerHeight - 150);
       f.x = f.fromLeft ? -120 : window.innerWidth + 120;
     }
@@ -146,12 +146,15 @@ document.getElementById("speaker").addEventListener("click", () => {
 // Ablauf beim Laden der Seite
 window.addEventListener("load", () => {
   setTimeout(() => {
-    playSound(sounds.aufgabe, () => {
-      setTimeout(() => { // <-- 1,3 Sekunden warten
-        let farbe = randomColor();
-        playSound(sounds[farbe]);
-      }, 1300);
-    });
+    let audio = new Audio(sounds.aufgabe);
+    audio.play();
+
+    // Nach 3 Sekunden die Zufallsfarbe abspielen
+    setTimeout(() => {
+      let farbe = randomColor();
+      playSound(sounds[farbe]);
+    }, 3000);
+
   }, 500);
 });
 </script>
