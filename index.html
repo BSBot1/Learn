@@ -43,20 +43,41 @@
   <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.12-3.84l-1.42 1.42A2.5 2.5 0 0 1 15.5 12a2.5 2.5 0 0 1-2.54 2.42l1.42 1.42A4.5 4.5 0 0 0 16.5 12zm4 0a8.5 8.5 0 0 0-4-7.32l-1.42 1.42A6.5 6.5 0 0 1 18.5 12a6.5 6.5 0 0 1-3.42 5.58l1.42 1.42A8.5 8.5 0 0 0 20.5 12z"/>
 </svg>
 
-<!-- Audio -->
-<audio id="fishSound" src="sound.mp3"></audio>
-
 <script>
 const fishImgUrl = "https://i.postimg.cc/QM2Gy02d/21-F6-B391-3-DF7-401-E-A8-E6-208-F0-C7-CC7-C9.png";
 const numFish = 12;
 const fishes = [];
 
-// Zufällige Farbe generieren
+// MP3-Dateien (raw GitHub Links)
+const sounds = {
+  aufgabe: "https://raw.githubusercontent.com/BSBot1/Learn/main/AufgabeFische.mp3",
+  rot: "https://raw.githubusercontent.com/BSBot1/Learn/main/Rot.mp3",
+  blau: "https://raw.githubusercontent.com/BSBot1/Learn/main/Blau.mp3",
+  gelb: "https://raw.githubusercontent.com/BSBot1/Learn/main/Gelb.mp3",
+  gruen: "https://raw.githubusercontent.com/BSBot1/Learn/main/Gruen.mp3",
+  lila: "https://raw.githubusercontent.com/BSBot1/Learn/main/Lila.mp3",
+  pink: "https://raw.githubusercontent.com/BSBot1/Learn/main/Pink.mp3"
+};
+
+function playSound(url, callback) {
+  let audio = new Audio(url);
+  audio.onended = () => { if (callback) callback(); };
+  audio.play();
+}
+
+// Farben-Liste
+const farben = ["rot", "blau", "gelb", "gruen", "lila", "pink"];
+
+// Zufällige Farbe
+function randomColor() {
+  return farben[Math.floor(Math.random() * farben.length)];
+}
+
+// Fische erzeugen
 function randomHue() {
   return Math.floor(Math.random() * 360);
 }
 
-// Fische erzeugen
 for (let i = 0; i < numFish; i++) {
   let fish = document.createElement("img");
   fish.src = fishImgUrl;
@@ -66,7 +87,6 @@ for (let i = 0; i < numFish; i++) {
   let hue = randomHue();
 
   fish.style.filter = `hue-rotate(${hue}deg)`;
-  // Kopf immer vorne
   fish.style.transform = startFromLeft ? "scaleX(-1)" : "scaleX(1)";
   fish.style.top = Math.random() * (window.innerHeight - 150) + "px";
 
@@ -100,20 +120,16 @@ function moveFish() {
   fishes.forEach(f => {
     f.x += f.dx;
 
-    // Falls aus dem Bildschirm raus
     if ((f.dx > 0 && f.x > window.innerWidth + 150) || (f.dx < 0 && f.x < -150)) {
-      // Neue Richtung und Farbe
       f.fromLeft = !f.fromLeft;
       f.dx = f.fromLeft ? (Math.random() * 1.5 + 0.5) : -(Math.random() * 1.5 + 0.5);
       f.hue = randomHue();
       f.el.style.filter = `hue-rotate(${f.hue}deg)`;
-      // Kopf immer vorne
       f.el.style.transform = f.fromLeft ? "scaleX(-1)" : "scaleX(1)";
       f.y = Math.random() * (window.innerHeight - 150);
       f.x = f.fromLeft ? -120 : window.innerWidth + 120;
     }
 
-    // Position setzen
     f.el.style.left = f.x + "px";
     f.el.style.top = f.y + "px";
   });
@@ -124,9 +140,17 @@ moveFish();
 
 // Lautsprecher → Sound
 document.getElementById("speaker").addEventListener("click", () => {
-  const audio = document.getElementById("fishSound");
-  audio.currentTime = 0;
-  audio.play();
+  playSound(sounds.aufgabe);
+});
+
+// Ablauf beim Laden der Seite
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    playSound(sounds.aufgabe, () => {
+      let farbe = randomColor();
+      playSound(sounds[farbe]);
+    });
+  }, 500);
 });
 </script>
 
