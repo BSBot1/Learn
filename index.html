@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Lernspiel – Fliegende Vögel</title>
+<style>
+  body {
+    margin: 0;
+    background-color: #87CEEB; /* Himmelblau */
+    overflow: hidden;
+    font-family: sans-serif;
+  }
+
+  #speaker {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    fill: white; /* Symbolfarbe */
+  }
+
+  #speaker:hover {
+    fill: yellow; /* Farbe beim Hovern */
+  }
+</style>
+</head>
+<body>
+
+<!-- Lautsprecher-Symbol (SF Symbol SVG) -->
+<svg id="speaker" viewBox="0 0 24 24">
+  <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.12-3.84l-1.42 1.42A2.5 2.5 0 0 1 15.5 12a2.5 2.5 0 0 1-2.54 2.42l1.42 1.42A4.5 4.5 0 0 0 16.5 12zm4 0a8.5 8.5 0 0 0-4-7.32l-1.42 1.42A6.5 6.5 0 0 1 18.5 12a6.5 6.5 0 0 1-3.42 5.58l1.42 1.42A8.5 8.5 0 0 0 20.5 12z"/>
+</svg>
+
+<!-- Hintergrund-Canvas -->
+<canvas id="gameCanvas"></canvas>
+
+<!-- Audio -->
+<audio id="birdSound" src="sound.mp3"></audio>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+window.addEventListener("resize", () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+// Vogel-Objekte erzeugen
+const birds = [];
+const colors = ["red", "blue", "green", "yellow", "purple"];
+
+for (let i = 0; i < 5; i++) {
+  birds.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * (canvas.height - 200) + 100,
+    color: colors[i % colors.length],
+    speed: (Math.random() * 1.5) + 0.5,
+    direction: Math.random() < 0.5 ? 1 : -1
+  });
+}
+
+// Vogel zeichnen
+function drawBird(bird) {
+  ctx.beginPath();
+  ctx.fillStyle = bird.color;
+  ctx.arc(bird.x, bird.y, 20, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(bird.x, bird.y);
+  ctx.lineTo(bird.x - 30 * bird.direction, bird.y - 10);
+  ctx.lineTo(bird.x - 30 * bird.direction, bird.y + 10);
+  ctx.closePath();
+  ctx.fill();
+}
+
+// Bewegung aktualisieren
+function updateBird(bird) {
+  bird.x += bird.speed * bird.direction;
+  if (bird.x > canvas.width - 20 || bird.x < 20) {
+    bird.direction *= -1;
+  }
+}
+
+// Spiel-Loop
+function gameLoop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  birds.forEach(bird => {
+    updateBird(bird);
+    drawBird(bird);
+  });
+
+  requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+
+// Audio abspielen bei Klick auf Lautsprecher
+document.getElementById("speaker").addEventListener("click", () => {
+  const audio = document.getElementById("birdSound");
+  audio.currentTime = 0;
+  audio.play();
+});
+</script>
+
+</body>
+</html>
